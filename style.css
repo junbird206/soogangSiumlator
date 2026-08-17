@@ -1,0 +1,322 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+:root {
+  --toss-blue: #3182f6;
+  --toss-blue-hover: #1b64da;
+  --toss-bg: #f2f4f6;
+  --toss-surface: #ffffff;
+  --toss-text-title: #191f28;
+  --toss-text-body: #333d4b;
+  --toss-text-muted: #8b95a1;
+  --toss-danger: #f04452;
+  --toss-danger-hover: #d2323f;
+  --toss-success: #3182f6; /* 토스는 성공도 주로 블루 사용 */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  background-color: var(--toss-bg);
+  color: var(--toss-text-body);
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overscroll-behavior-y: contain; 
+}
+
+#app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: var(--toss-surface);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 뷰 전환 로직 */
+.view {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  padding: 3rem 1.5rem;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.view.active {
+  display: flex;
+}
+
+/* 공통 헤더 */
+header {
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--toss-text-title);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--toss-text-title);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--toss-text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* 랜딩 화면 */
+.rules {
+  background: var(--toss-bg);
+  padding: 1.5rem;
+  border-radius: 16px;
+  list-style: none;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.rules li {
+  margin-bottom: 0.75rem;
+  position: relative;
+  padding-left: 1.25rem;
+  color: var(--toss-text-title);
+}
+
+.rules li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--toss-blue);
+  font-weight: bold;
+}
+
+.rules li:last-child {
+  margin-bottom: 0;
+}
+
+.record-container {
+  padding: 1.5rem;
+  background: rgba(49, 130, 246, 0.08);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: var(--toss-blue);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 버튼 스타일 */
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  border-radius: 16px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+.primary-btn {
+  background-color: var(--toss-blue);
+  color: white;
+  width: 100%;
+  padding: 1.125rem;
+  font-size: 1.125rem;
+}
+
+.primary-btn:hover {
+  background-color: var(--toss-blue-hover);
+}
+
+.secondary-btn {
+  background-color: var(--toss-bg);
+  color: var(--toss-text-title);
+  width: 100%;
+  padding: 1.125rem;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+}
+
+.secondary-btn:hover {
+  background-color: #e5e8eb;
+}
+
+.lg-btn {
+  padding: 1.25rem;
+  font-size: 1.25rem;
+}
+
+/* 중앙 정렬용 컨테이너 */
+.center-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* 게임 뷰 */
+.clock-container {
+  margin-bottom: 4rem;
+  width: 100%;
+  text-align: center;
+}
+
+#clock {
+  font-family: "SF Mono", "Roboto Mono", Pretendard, monospace;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--toss-text-title);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.clock-warning {
+  color: var(--toss-danger) !important;
+}
+
+.action-btn {
+  background-color: var(--toss-blue);
+  color: white;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow: 0 16px 32px -8px rgba(49, 130, 246, 0.4);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 8px 16px -8px rgba(49, 130, 246, 0.4);
+}
+
+/* 준비 뷰 */
+#view-ready h2 {
+  margin-bottom: 0.5rem;
+}
+#view-ready p {
+  margin-bottom: 2.5rem;
+  color: var(--toss-text-muted);
+}
+.pulse {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(49, 130, 246, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(49, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(49, 130, 246, 0); }
+}
+
+/* 결과 뷰 */
+#result-status {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--toss-text-title);
+}
+
+.delay-text {
+  font-family: "SF Mono", "Roboto Mono", Pretendard, monospace;
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  color: var(--toss-text-title);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.message-text {
+  font-size: 1.125rem;
+  color: var(--toss-text-muted);
+  font-weight: 500;
+  margin-bottom: 2.5rem;
+  word-break: keep-all;
+}
+
+.record-compare {
+  margin-bottom: 2.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--toss-text-muted);
+  background: var(--toss-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.new-record {
+  color: var(--toss-blue);
+  font-weight: 700;
+}
+
+.action-buttons {
+  width: 100%;
+}
+
+.promo-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.promo-footer p {
+  color: var(--toss-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.promo-footer a {
+  color: var(--toss-blue);
+  text-decoration: none;
+}
+
+.promo-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 상태별 색상 덮어쓰기 (JS에서 인라인으로 넣는 값보다 우선순위는 낮지만 기본 지정) */
+.status-fail { color: var(--toss-danger); }
+.status-success { color: var(--toss-blue); }

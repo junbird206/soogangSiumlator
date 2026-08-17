@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>수강신청 시뮬레이터</title>
+  <meta name="description" content="10시 정각, 몇 밀리초 만에 누를 수 있나요?">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Google Analytics 4 (Placeholder) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- View 1: Landing -->
+    <div id="view-landing" class="view active">
+      <header>
+        <h1>수강신청 시뮬레이터</h1>
+        <p class="subtitle">10시 정각, 몇 밀리초 만에 누를 수 있나요?</p>
+      </header>
+      
+      <main>
+        <ul class="rules">
+          <li><strong>버튼은 딱 한 번만 누를 수 있습니다.</strong> 연타 불가.</li>
+          <li><strong>정각 전 클릭은 광탈입니다.</strong></li>
+          <li><strong>소리를 켜주세요.</strong> 5초 전부터 비프음이 울립니다.</li>
+        </ul>
+
+        <div class="record-container" id="best-record-container" style="display: none;">
+          <p>🏆 내 최고 기록: <span id="best-record-text"></span></p>
+        </div>
+      </main>
+
+      <footer>
+        <button id="btn-ready" class="primary-btn">도전 준비</button>
+      </footer>
+    </div>
+
+    <!-- View 2: Ready -->
+    <div id="view-ready" class="view">
+      <main class="center-content">
+        <h2>소리를 켜주세요 🔊</h2>
+        <p>비프음에 맞춰 정각에 버튼을 누르세요.</p>
+        <button id="btn-start" class="primary-btn pulse">시작하기</button>
+      </main>
+    </div>
+
+    <!-- View 3: Game -->
+    <div id="view-game" class="view">
+      <main class="center-content">
+        <div class="clock-container">
+          <div id="clock">09:59:50.00</div>
+        </div>
+        <!-- pointerdown 이벤트로 클릭 지연 방지 -->
+        <button id="btn-action" class="action-btn" style="touch-action: manipulation;">수강신청</button>
+      </main>
+    </div>
+
+    <!-- View 4: Result -->
+    <div id="view-result" class="view">
+      <main class="center-content">
+        <div id="result-status"></div>
+        <div id="result-delay" class="delay-text"></div>
+        <div class="badge" id="result-badge"></div>
+        <p id="result-message" class="message-text"></p>
+        
+        <div class="record-compare" id="record-compare-container"></div>
+        
+        <div class="action-buttons">
+          <button id="btn-share" class="secondary-btn">스토리에 공유하기</button>
+          <button id="btn-retry" class="primary-btn lg-btn">다시 하기</button>
+        </div>
+      </main>
+      
+      <footer class="promo-footer">
+        <p>이 게임, Gemini로 만들었습니다.</p>
+        <a href="https://gemini.google.com/advanced?hl=ko" id="promo-link" target="_blank" rel="noopener noreferrer">
+          대학생·대학원생은 Google AI Plus 12개월 무료 &rarr;
+        </a>
+      </footer>
+    </div>
+  </div>
+
+  <script src="audio_b64.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
