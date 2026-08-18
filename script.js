@@ -1,6 +1,8 @@
 // Constants
-const TEAM_SIGNUP_LINK = "https://gemini.google.com/advanced?hl=ko";
 const GAME_DURATION_MS = 10000; // 10초 대기
+const CAMPAIGN_MODE = 'PRE_LAUNCH';  // 'PRE_LAUNCH' | 'LIVE'
+const TEAM_SIGNUP_LINK = '';          // LIVE 전환 시 여기에 링크 주입
+const INSTAGRAM_URL = 'https://instagram.com/teamgemini_korea'; // 임시 핸들
 
 // Audio Context
 let audioCtx = null;
@@ -34,10 +36,46 @@ const btnShare = document.getElementById('btn-share');
 
 const bestRecordContainer = document.getElementById('best-record-container');
 const bestRecordText = document.getElementById('best-record-text');
-const promoLink = document.getElementById('promo-link');
 
-// Set Promo Link
-promoLink.href = TEAM_SIGNUP_LINK;
+// GA4 Tracker
+function sendGAEvent(eventName, params = {}) {
+  if (typeof gtag === 'function') {
+    gtag('event', eventName, params);
+  }
+}
+
+// Promo UI Logic
+function initPromoUI() {
+  const ctaBody = document.getElementById('cta-body');
+  const btnCta = document.getElementById('btn-cta');
+  const promoBanners = document.querySelectorAll('.promo-banner-global');
+  
+  const activeMode = (CAMPAIGN_MODE === 'LIVE' && TEAM_SIGNUP_LINK) ? 'LIVE' : 'PRE_LAUNCH';
+
+  if (activeMode === 'PRE_LAUNCH') {
+    promoBanners.forEach(el => el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">혜택 안내 준비 중</span>');
+    if (ctaBody) ctaBody.innerHTML = '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.';
+    if (btnCta) {
+      btnCta.textContent = '인스타그램 팔로우하고 소식 받기';
+      btnCta.onclick = () => {
+        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH' });
+        window.open(INSTAGRAM_URL, '_blank');
+      };
+    }
+  } else {
+    promoBanners.forEach(el => el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료');
+    if (ctaBody) ctaBody.innerHTML = '대학생·대학원생은 Google AI Plus를 12개월 무료로 쓸 수 있어요.';
+    if (btnCta) {
+      btnCta.textContent = '12개월 무료로 시작하기';
+      btnCta.onclick = () => {
+        sendGAEvent('cta_click', { mode: 'LIVE' });
+        window.open(TEAM_SIGNUP_LINK, '_blank');
+      };
+    }
+  }
+}
+
+initPromoUI();
 
 // Initialize Landing
 function initLanding() {

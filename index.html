@@ -21,7 +21,7 @@
     <!-- View 1: Landing -->
     <div id="view-landing" class="view active">
       <header>
-        <h1>수강신청 시뮬레이터</h1>
+        <h1><img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">수강신청 시뮬레이터</h1>
         <p class="subtitle">10시 정각, 몇 밀리초 만에 누를 수 있나요?</p>
       </header>
       
@@ -39,16 +39,20 @@
 
       <footer>
         <button id="btn-ready" class="primary-btn">도전 준비</button>
+        <div class="promo-banner-global"></div>
       </footer>
     </div>
 
     <!-- View 2: Ready -->
     <div id="view-ready" class="view">
       <main class="center-content">
-        <h2>소리를 켜주세요 🔊</h2>
+        <h2><img src="img/speaker.png" alt="speaker" style="width: 36px; vertical-align: middle; margin-right: 6px;">소리를 켜주세요</h2>
         <p>비프음에 맞춰 정각에 버튼을 누르세요.</p>
         <button id="btn-start" class="primary-btn pulse">시작하기</button>
       </main>
+      <footer style="margin-top: auto; text-align: center;">
+        <div class="promo-banner-global"></div>
+      </footer>
     </div>
 
     <!-- View 3: Game -->
@@ -73,16 +77,15 @@
         <div class="record-compare" id="record-compare-container"></div>
         
         <div class="action-buttons">
-          <button id="btn-share" class="secondary-btn">스토리에 공유하기</button>
-          <button id="btn-retry" class="primary-btn lg-btn">다시 하기</button>
+          <button id="btn-share" class="primary-btn lg-btn" style="margin-bottom: 0.75rem;">스토리에 공유하기</button>
+          <button id="btn-retry" class="secondary-btn">다시 하기</button>
         </div>
       </main>
       
       <footer class="promo-footer">
-        <p>이 게임, Gemini로 만들었습니다.</p>
-        <a href="https://gemini.google.com/advanced?hl=ko" id="promo-link" target="_blank" rel="noopener noreferrer">
-          대학생·대학원생은 Google AI Plus 12개월 무료 &rarr;
-        </a>
+        <h3 class="cta-title"><img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다</h3>
+        <p class="cta-body" id="cta-body"></p>
+        <button id="btn-cta" class="tertiary-btn"></button>
       </footer>
     </div>
   </div>

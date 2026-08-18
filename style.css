@@ -299,22 +299,52 @@ button:active {
   margin-top: auto;
   padding-top: 2rem;
   text-align: center;
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
-.promo-footer p {
+.cta-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--toss-text-title);
+  margin-bottom: 0.5rem;
+}
+
+.cta-body {
+  font-size: 0.95rem;
   color: var(--toss-text-muted);
-  margin-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  word-break: keep-all;
 }
 
-.promo-footer a {
+.tertiary-btn {
+  background-color: transparent;
   color: var(--toss-blue);
-  text-decoration: none;
+  border: 1px solid var(--toss-blue);
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
 }
 
-.promo-footer a:hover {
-  text-decoration: underline;
+.tertiary-btn:hover {
+  background-color: rgba(49, 130, 246, 0.05);
+}
+
+.promo-banner-global {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(49, 130, 246, 0.08);
+  border-radius: 12px;
+  color: var(--toss-blue);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.banner-sub {
+  font-size: 0.85rem;
+  color: var(--toss-text-muted);
+  font-weight: 500;
+  display: block;
+  margin-top: 0.25rem;
 }
 
 /* 상태별 색상 덮어쓰기 (JS에서 인라인으로 넣는 값보다 우선순위는 낮지만 기본 지정) */
