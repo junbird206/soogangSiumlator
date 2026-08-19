@@ -2,7 +2,7 @@
 const GAME_DURATION_MS = 10000; // 10초 대기
 const CAMPAIGN_MODE = 'PRE_LAUNCH';  // 'PRE_LAUNCH' | 'LIVE'
 const TEAM_SIGNUP_LINK = '';          // LIVE 전환 시 여기에 링크 주입
-const INSTAGRAM_URL = 'https://instagram.com/teamgemini_korea'; // 임시 핸들
+const INSTAGRAM_URL = 'https://www.instagram.com/gemini_koreauniv/'; // 임시 핸들
 
 // Audio Context
 let audioCtx = null;
@@ -408,7 +408,7 @@ btnShare.addEventListener('click', async () => {
   ctx.font = 'bold 45px Pretendard, -apple-system, sans-serif';
   ctx.fillText('soogang.netlify.app', canvas.width / 2, 1720);
   ctx.fillStyle = '#3182f6';
-  ctx.fillText('@teamgemini_korea', canvas.width / 2, 1790);
+  ctx.fillText('@gemini_koreauniv', canvas.width / 2, 1790);
   
   // Export and share
   try {
