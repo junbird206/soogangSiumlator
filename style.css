@@ -350,3 +350,39 @@ button:active {
 /* 상태별 색상 덮어쓰기 (JS에서 인라인으로 넣는 값보다 우선순위는 낮지만 기본 지정) */
 .status-fail { color: var(--toss-danger); }
 .status-success { color: var(--toss-blue); }
+
+.lang-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+  background: var(--toss-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.4;
+  transition: all 0.2s ease;
+  filter: grayscale(100%);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  filter: grayscale(0%);
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

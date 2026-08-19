@@ -20,35 +20,45 @@
   <div id="app">
     <!-- View 1: Landing -->
     <div id="view-landing" class="view active">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="ko" onclick="setLang('ko')">🇰🇷</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇺🇸</button>
+      </div>
+      
       <header>
-        <h1><img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">수강신청 시뮬레이터</h1>
-        <p class="subtitle">10시 정각, 몇 밀리초 만에 누를 수 있나요?</p>
+        <h1 data-i18n-html="title"><img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">수강신청 시뮬레이터</h1>
+        <p class="subtitle" data-i18n="subtitle">10시 정각, 몇 밀리초 만에 누를 수 있나요?</p>
       </header>
       
       <main>
         <ul class="rules">
-          <li><strong>버튼은 딱 한 번만 누를 수 있습니다.</strong> 연타 불가.</li>
-          <li><strong>정각 전 클릭은 광탈입니다.</strong></li>
-          <li><strong>소리를 켜주세요.</strong> 5초 전부터 비프음이 울립니다.</li>
+          <li data-i18n-html="rule1"><strong>버튼은 딱 한 번만 누를 수 있습니다.</strong> 연타 불가.</li>
+          <li data-i18n-html="rule2"><strong>정각 전 클릭은 광탈입니다.</strong></li>
+          <li data-i18n-html="rule3"><strong>소리를 켜주세요.</strong> 5초 전부터 비프음이 울립니다.</li>
         </ul>
 
         <div class="record-container" id="best-record-container" style="display: none;">
-          <p>🏆 내 최고 기록: <span id="best-record-text"></span></p>
+          <p><span data-i18n="bestRecordLabel">🏆 내 최고 기록:</span> <span id="best-record-text"></span></p>
         </div>
       </main>
 
       <footer>
-        <button id="btn-ready" class="primary-btn">도전 준비</button>
+        <button id="btn-ready" class="primary-btn" data-i18n="btnReady">도전 준비</button>
         <div class="promo-banner-global"></div>
       </footer>
     </div>
 
     <!-- View 2: Ready -->
     <div id="view-ready" class="view">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="ko" onclick="setLang('ko')">🇰🇷</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇺🇸</button>
+      </div>
+      
       <main class="center-content">
-        <h2><img src="img/speaker.png" alt="speaker" style="width: 36px; vertical-align: middle; margin-right: 6px;">소리를 켜주세요</h2>
-        <p>비프음에 맞춰 정각에 버튼을 누르세요.</p>
-        <button id="btn-start" class="primary-btn pulse">시작하기</button>
+        <h2 data-i18n-html="readyTitle"><img src="img/speaker.png" alt="speaker" style="width: 36px; vertical-align: middle; margin-right: 6px;">소리를 켜주세요</h2>
+        <p data-i18n="readyDesc">비프음에 맞춰 정각에 버튼을 누르세요.</p>
+        <button id="btn-start" class="primary-btn pulse" data-i18n="btnStart">시작하기</button>
       </main>
       <footer style="margin-top: auto; text-align: center;">
         <div class="promo-banner-global"></div>
@@ -62,7 +72,7 @@
           <div id="clock">09:59:50.00</div>
         </div>
         <!-- pointerdown 이벤트로 클릭 지연 방지 -->
-        <button id="btn-action" class="action-btn" style="touch-action: manipulation;">수강신청</button>
+        <button id="btn-action" class="action-btn" style="touch-action: manipulation;" data-i18n="btnAction">수강신청</button>
       </main>
     </div>
 
@@ -77,13 +87,13 @@
         <div class="record-compare" id="record-compare-container"></div>
         
         <div class="action-buttons">
-          <button id="btn-share" class="primary-btn lg-btn" style="margin-bottom: 0.75rem;">스토리에 공유하기</button>
-          <button id="btn-retry" class="secondary-btn">다시 하기</button>
+          <button id="btn-share" class="primary-btn lg-btn" style="margin-bottom: 0.75rem;" data-i18n="btnShare">스토리에 공유하기</button>
+          <button id="btn-retry" class="secondary-btn" data-i18n="btnRetry">다시 하기</button>
         </div>
       </main>
       
       <footer class="promo-footer">
-        <h3 class="cta-title"><img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다</h3>
+        <h3 class="cta-title" data-i18n-html="ctaTitle"><img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다</h3>
         <p class="cta-body" id="cta-body"></p>
         <button id="btn-cta" class="tertiary-btn"></button>
       </footer>

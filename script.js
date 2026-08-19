@@ -7,7 +7,7 @@ const INSTAGRAM_URL = 'https://www.instagram.com/gemini_koreauniv/'; // 임시 �
 // Audio Context
 let audioCtx = null;
 let beepBuffer = null;
-let currentBeepSource = null; // 오디오 중단을 위해 추가
+let currentBeepSource = null;
 
 // Game State
 let gameState = {
@@ -16,10 +16,142 @@ let gameState = {
   isGameRunning: false,
   hasClicked: false,
   bestRecord: localStorage.getItem('courseRegBestRecord') ? parseInt(localStorage.getItem('courseRegBestRecord')) : null,
-  animationFrameId: null
+  animationFrameId: null,
+  lastGrade: null,
+  lastDelay: null
 };
 
-// ... DOM Elements ... (unchanged)
+// i18n
+const i18n = {
+  ko: {
+    title: '<img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">수강신청 시뮬레이터',
+    subtitle: '10시 정각, 몇 밀리초 만에 누를 수 있나요?',
+    rule1: '<strong>버튼은 딱 한 번만 누를 수 있습니다.</strong> 연타 불가.',
+    rule2: '<strong>정각 전 클릭은 광탈입니다.</strong>',
+    rule3: '<strong>소리를 켜주세요.</strong> 5초 전부터 비프음이 울립니다.',
+    bestRecordLabel: '🏆 내 최고 기록:',
+    btnReady: '도전 준비',
+    readyTitle: '<img src="img/speaker.png" alt="speaker" style="width: 36px; vertical-align: middle; margin-right: 6px;">소리를 켜주세요',
+    readyDesc: '비프음에 맞춰 정각에 버튼을 누르세요.',
+    btnStart: '시작하기',
+    btnStartLoading: '준비 중...',
+    btnAction: '수강신청',
+    btnShare: '스토리에 공유하기',
+    btnRetry: '다시 하기',
+    promoBannerTitle: '대학생·대학원생 Google AI Plus 12개월 무료',
+    promoBannerSubPre: '인스타 팔로우하고 혜택 안내받기 👉',
+    promoBannerSubLive: '12개월 무료 혜택 바로가기 👉',
+    ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다',
+    ctaBodyPre: '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.',
+    ctaBodyLive: '대학생·대학원생은 Google AI Plus를 12개월 무료로 쓸 수 있어요.',
+    btnCtaPre: '인스타그램 팔로우하고 소식 받기',
+    btnCtaLive: '12개월 무료로 시작하기',
+    failTitle: '광탈',
+    failMsg: '서버도 안 열렸는데 눌렀습니다',
+    grade1Title: '수강신청의 신',
+    grade1Msg: '매크로 의심받는 속도',
+    grade2Title: '광클 마스터',
+    grade2Msg: '원하는 강의 전부 잡음',
+    grade3Title: '무난한 인간',
+    grade3Msg: '전공은 잡았고 교양은 글쎄',
+    grade4Title: '대기 15번',
+    grade4Msg: '개강하고 눈치싸움 시작',
+    grade5Title: '장바구니 관람객',
+    grade5Msg: '담아둔 건 많은데 잡힌 건 없음',
+    grade6Title: '재수강 확정',
+    grade6Msg: '내년에 만나요',
+    newRecord: '🎉 신기록!',
+    firstRecord: '🎉 첫 기록 달성!',
+    prevBest: '이전 최고',
+    myBest: '내 최고 기록:',
+    shareTitle: '수강신청 시뮬레이터 결과',
+    shareText: '나의 수강신청 반응속도는?',
+    savedMsg: '이미지가 기기에 저장되었습니다.',
+    canvasTitle: '수강신청 반응속도 시뮬레이터'
+  },
+  en: {
+    title: '<img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">Registration Simulator',
+    subtitle: 'Exactly at 10:00:00, how fast can you click?',
+    rule1: '<strong>You can only click ONCE.</strong> No spamming.',
+    rule2: '<strong>Clicking early means instant FAIL.</strong>',
+    rule3: '<strong>Turn on sound.</strong> Beeps start 5 seconds before.',
+    bestRecordLabel: '🏆 My Best Record:',
+    btnReady: 'Get Ready',
+    readyTitle: '<img src="img/speaker.png" alt="speaker" style="width: 36px; vertical-align: middle; margin-right: 6px;">Turn on sound',
+    readyDesc: 'Press the button exactly at 10:00 on the final beep.',
+    btnStart: 'Start',
+    btnStartLoading: 'Loading...',
+    btnAction: 'Register',
+    btnShare: 'Share to Story',
+    btnRetry: 'Try Again',
+    promoBannerTitle: '12 Months Free Google AI Plus for Students',
+    promoBannerSubPre: 'Follow IG for updates 👉',
+    promoBannerSubLive: 'Get 12 Months Free 👉',
+    ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">Built with Gemini',
+    ctaBodyPre: '12 months free Google AI Plus for university students, coming soon.<br>Follow us to stay updated.',
+    ctaBodyLive: 'University students can get 12 months of Google AI Plus for free.',
+    btnCtaPre: 'Follow Instagram for Updates',
+    btnCtaLive: 'Start 12 Months Free',
+    failTitle: 'FAIL',
+    failMsg: 'You clicked before the server opened',
+    grade1Title: 'God of Registration',
+    grade1Msg: 'Fast enough to be suspected as a macro',
+    grade2Title: 'Click Master',
+    grade2Msg: 'Got every class you wanted',
+    grade3Title: 'Average Student',
+    grade3Msg: 'Got major classes, missed electives',
+    grade4Title: 'Waitlist #15',
+    grade4Msg: 'Let the add/drop battle begin',
+    grade5Title: 'Window Shopper',
+    grade5Msg: 'Cart is full, caught nothing',
+    grade6Title: 'Retake Confirmed',
+    grade6Msg: 'See you next year',
+    newRecord: '🎉 New Record!',
+    firstRecord: '🎉 First Record Set!',
+    prevBest: 'Previous best',
+    myBest: 'My Best Record:',
+    shareTitle: 'Registration Simulator Result',
+    shareText: 'What is my reaction speed?',
+    savedMsg: 'Image saved to device.',
+    canvasTitle: 'Registration Simulator'
+  }
+};
+
+let currentLang = 'ko';
+
+function setLang(lang) {
+  currentLang = lang;
+  
+  // Update lang buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  
+  // Update text content for simple strings
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key]) {
+      el.textContent = i18n[lang][key];
+    }
+  });
+
+  // Update HTML content for strings with formatting/images
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (i18n[lang][key]) {
+      el.innerHTML = i18n[lang][key];
+    }
+  });
+  
+  // Re-init promos and dynamic elements
+  initPromoUI();
+  if (gameState.bestRecord !== null) {
+    const bestRecordText = document.getElementById('best-record-text');
+    bestRecordText.textContent = `${gameState.bestRecord}ms`;
+  }
+}
+
+// DOM Elements
 const views = {
   landing: document.getElementById('view-landing'),
   ready: document.getElementById('view-ready'),
@@ -51,45 +183,44 @@ function initPromoUI() {
   const promoBanners = document.querySelectorAll('.promo-banner-global');
   
   const activeMode = (CAMPAIGN_MODE === 'LIVE' && TEAM_SIGNUP_LINK) ? 'LIVE' : 'PRE_LAUNCH';
+  const t = i18n[currentLang];
 
   if (activeMode === 'PRE_LAUNCH') {
     promoBanners.forEach(el => {
-      el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">인스타 팔로우하고 혜택 안내받기 👉</span>';
+      el.innerHTML = `${t.promoBannerTitle}<br><span class="banner-sub">${t.promoBannerSubPre}</span>`;
       el.style.cursor = 'pointer';
       el.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'banner' });
+        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'banner', lang: currentLang });
         window.open(INSTAGRAM_URL, '_blank');
       };
     });
-    if (ctaBody) ctaBody.innerHTML = '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.';
+    if (ctaBody) ctaBody.innerHTML = t.ctaBodyPre;
     if (btnCta) {
-      btnCta.textContent = '인스타그램 팔로우하고 소식 받기';
+      btnCta.textContent = t.btnCtaPre;
       btnCta.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'result_cta' });
+        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'result_cta', lang: currentLang });
         window.open(INSTAGRAM_URL, '_blank');
       };
     }
   } else {
     promoBanners.forEach(el => {
-      el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">12개월 무료 혜택 바로가기 👉</span>';
+      el.innerHTML = `${t.promoBannerTitle}<br><span class="banner-sub">${t.promoBannerSubLive}</span>`;
       el.style.cursor = 'pointer';
       el.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'LIVE', source: 'banner' });
+        sendGAEvent('cta_click', { mode: 'LIVE', source: 'banner', lang: currentLang });
         window.open(TEAM_SIGNUP_LINK, '_blank');
       };
     });
-    if (ctaBody) ctaBody.innerHTML = '대학생·대학원생은 Google AI Plus를 12개월 무료로 쓸 수 있어요.';
+    if (ctaBody) ctaBody.innerHTML = t.ctaBodyLive;
     if (btnCta) {
-      btnCta.textContent = '12개월 무료로 시작하기';
+      btnCta.textContent = t.btnCtaLive;
       btnCta.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'LIVE', source: 'result_cta' });
+        sendGAEvent('cta_click', { mode: 'LIVE', source: 'result_cta', lang: currentLang });
         window.open(TEAM_SIGNUP_LINK, '_blank');
       };
     }
   }
 }
-
-initPromoUI();
 
 // Initialize Landing
 function initLanding() {
@@ -102,7 +233,7 @@ function initLanding() {
   switchView('landing');
 }
 
-initLanding();
+setLang('ko'); // initialize defaults
 
 // View Switcher
 function switchView(viewName) {
@@ -172,12 +303,7 @@ function scheduleBeeps() {
   if (!audioCtx) return;
   
   const nowAudio = audioCtx.currentTime;
-  
-  // mp3 파일 내에서 마지막 긴 '삐~' 소리가 시작되는 정확한 시점(초)
-  // 소리가 정각보다 살짝 빨리 나온다는 피드백 반영: 재생 시작을 살짝 늦추기 위해 값을 7.16 -> 7.08 로 줄임
   const FINAL_BEEP_START_TIME = 7.08;
-  
-  // 10초(GAME_DURATION_MS) 뒤인 정각에, 파일의 FINAL_BEEP_START_TIME 지점이 오도록 역산하여 1번만 재생
   const timeToPlay = (GAME_DURATION_MS / 1000) - FINAL_BEEP_START_TIME;
   
   playBeep(nowAudio + timeToPlay);
@@ -189,10 +315,8 @@ function playBeep(startTime) {
   source.buffer = beepBuffer;
   source.connect(audioCtx.destination);
   
-  // startTime이 현재 시간보다 과거면 즉시 재생 (혹시 모를 버그 방지)
   source.start(Math.max(startTime, audioCtx.currentTime));
-  
-  currentBeepSource = source; // 실패 시 멈추기 위해 저장
+  currentBeepSource = source; 
 }
 
 // Game Logic
@@ -225,7 +349,6 @@ function updateClock() {
   }
   
   if (remaining <= -3000) {
-    // 3초 지날 때까지 안 누르면 장바구니행
     endGame(null);
     return;
   }
@@ -234,7 +357,7 @@ function updateClock() {
 }
 
 function handleAction(e) {
-  if (e) e.preventDefault(); // 더블 탭 확대 등 방지
+  if (e) e.preventDefault(); 
   
   if (!gameState.isGameRunning || gameState.hasClicked) return;
   gameState.hasClicked = true;
@@ -244,13 +367,10 @@ function handleAction(e) {
   const clickTime = e && e.timeStamp ? e.timeStamp : performance.now();
   const delay = clickTime - gameState.targetTime;
   
-  // 광탈(0ms 미만)인 경우 오디오 중지
   if (delay < 0 && currentBeepSource) {
     try {
       currentBeepSource.stop();
-    } catch (err) {
-      // 이미 멈췄거나 오류가 나는 경우 무시
-    }
+    } catch (err) {}
   }
   
   endGame(delay);
@@ -262,19 +382,17 @@ btnReady.addEventListener('click', () => {
 });
 
 btnStart.addEventListener('click', async () => {
-  // 버튼 비활성화 (여러번 클릭 방지)
   btnStart.disabled = true;
-  btnStart.textContent = '준비 중...';
+  btnStart.textContent = i18n[currentLang].btnStartLoading;
   
-  await initAudio(); // 오디오 디코딩 완료 대기
+  await initAudio(); 
   
   btnStart.disabled = false;
-  btnStart.textContent = '시작하기';
+  btnStart.textContent = i18n[currentLang].btnStart;
   
   startGame();
 });
 
-// pointerdown을 사용하여 최대한 빠르게 입력 받기 (모바일 탭 딜레이 우회)
 btnAction.addEventListener('pointerdown', handleAction);
 
 btnRetry.addEventListener('click', () => {
@@ -283,27 +401,28 @@ btnRetry.addEventListener('click', () => {
 
 // Result Logic
 function getGrade(delay) {
+  const t = i18n[currentLang];
   if (delay < 0) {
-    return { badge: "❌", title: "광탈", msg: "서버도 안 열렸는데 눌렀습니다", color: "#f04452", bg: "#fef0f1" };
+    return { badge: "❌", title: t.failTitle, msg: t.failMsg, color: "#f04452", bg: "#fef0f1" };
   } else if (delay <= 50) {
-    return { badge: "🏆", title: "수강신청의 신", msg: "매크로 의심받는 속도", color: "#3182f6", bg: "rgba(49, 130, 246, 0.1)" };
+    return { badge: "🏆", title: t.grade1Title, msg: t.grade1Msg, color: "#3182f6", bg: "rgba(49, 130, 246, 0.1)" };
   } else if (delay <= 150) {
-    return { badge: "🥇", title: "광클 마스터", msg: "원하는 강의 전부 잡음", color: "#1b64da", bg: "rgba(49, 130, 246, 0.06)" };
+    return { badge: "🥇", title: t.grade2Title, msg: t.grade2Msg, color: "#1b64da", bg: "rgba(49, 130, 246, 0.06)" };
   } else if (delay <= 300) {
-    return { badge: "🥈", title: "무난한 인간", msg: "전공은 잡았고 교양은 글쎄", color: "#333d4b", bg: "#f2f4f6" };
+    return { badge: "🥈", title: t.grade3Title, msg: t.grade3Msg, color: "#333d4b", bg: "#f2f4f6" };
   } else if (delay <= 500) {
-    return { badge: "🥉", title: "대기 15번", msg: "개강하고 눈치싸움 시작", color: "#f59e0b", bg: "#fffbeb" };
+    return { badge: "🥉", title: t.grade4Title, msg: t.grade4Msg, color: "#f59e0b", bg: "#fffbeb" };
   } else if (delay <= 1000) {
-    return { badge: "😵", title: "장바구니 관람객", msg: "담아둔 건 많은데 잡힌 건 없음", color: "#f97316", bg: "#fff7ed" };
+    return { badge: "😵", title: t.grade5Title, msg: t.grade5Msg, color: "#f97316", bg: "#fff7ed" };
   } else {
-    return { badge: "💀", title: "재수강 확정", msg: "내년에 만나요", color: "#191f28", bg: "#e5e8eb" };
+    return { badge: "💀", title: t.grade6Title, msg: t.grade6Msg, color: "#191f28", bg: "#e5e8eb" };
   }
 }
 
 function endGame(delay) {
-  // delay == null 이면 3초 초과로 장바구니 관람객 처리
   const actualDelay = delay === null ? 3001 : delay;
   const grade = getGrade(actualDelay);
+  const t = i18n[currentLang];
   
   const statusEl = document.getElementById('result-status');
   const delayEl = document.getElementById('result-delay');
@@ -320,15 +439,15 @@ function endGame(delay) {
   
   msgEl.textContent = grade.msg;
   
-  compareEl.innerHTML = ''; // reset
+  compareEl.innerHTML = ''; 
   
   if (delay < 0) {
     const earlySec = (Math.abs(actualDelay) / 1000).toFixed(3);
-    delayEl.textContent = `-${earlySec}초`;
+    const suffix = currentLang === 'ko' ? '초' : 's';
+    delayEl.textContent = `-${earlySec}${suffix}`;
     delayEl.style.color = "var(--toss-danger)";
     sendGAEvent('game_fail_early');
     
-    // 광탈 시 공유 버튼 숨기기
     btnShare.style.display = 'none';
   } else {
     const msStr = actualDelay > 3000 ? ">3000ms" : `+${Math.floor(actualDelay)}ms`;
@@ -336,10 +455,8 @@ function endGame(delay) {
     delayEl.style.color = "var(--toss-text-title)";
     sendGAEvent('game_complete', { grade: grade.title, delay_ms: Math.floor(actualDelay) });
     
-    // 성공 시 공유 버튼 보이기
     btnShare.style.display = 'block';
     
-    // 최고기록 갱신 로직 (성공한 경우에만)
     if (actualDelay <= 3000) {
       if (gameState.bestRecord === null || actualDelay < gameState.bestRecord) {
         const oldRecord = gameState.bestRecord;
@@ -347,17 +464,16 @@ function endGame(delay) {
         localStorage.setItem('courseRegBestRecord', gameState.bestRecord);
         
         if (oldRecord !== null) {
-          compareEl.innerHTML = `이전 최고 ${oldRecord}ms &mdash; <span class="new-record">🎉 신기록!</span>`;
+          compareEl.innerHTML = `${t.prevBest} ${oldRecord}ms &mdash; <span class="new-record">${t.newRecord}</span>`;
         } else {
-          compareEl.innerHTML = `<span class="new-record">🎉 첫 기록 달성!</span>`;
+          compareEl.innerHTML = `<span class="new-record">${t.firstRecord}</span>`;
         }
       } else {
-        compareEl.innerHTML = `내 최고 기록: ${gameState.bestRecord}ms`;
+        compareEl.innerHTML = `${t.myBest} ${gameState.bestRecord}ms`;
       }
     }
   }
   
-  // 캔버스 이미지 그리기 용도로 글로벌 저장
   gameState.lastGrade = grade;
   gameState.lastDelay = actualDelay;
   
@@ -366,44 +482,40 @@ function endGame(delay) {
 
 // Share Logic (Canvas)
 btnShare.addEventListener('click', async () => {
+  const t = i18n[currentLang];
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1920;
   const ctx = canvas.getContext('2d');
   
-  // 배경색
   ctx.fillStyle = '#f8fafc';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  // 헤더
   ctx.fillStyle = '#0f172a';
   ctx.font = 'bold 70px Pretendard, -apple-system, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('수강신청 반응속도 시뮬레이터', canvas.width / 2, 400);
+  ctx.fillText(t.canvasTitle, canvas.width / 2, 400);
   
-  // 뱃지 원 배경
   ctx.fillStyle = gameState.lastGrade.bg;
   ctx.beginPath();
   ctx.arc(canvas.width / 2, 700, 150, 0, Math.PI * 2);
   ctx.fill();
   
-  // 이모지 (뱃지)
   ctx.font = '120px -apple-system, sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillText(gameState.lastGrade.badge, canvas.width / 2, 700);
   
-  ctx.textBaseline = 'alphabetic'; // 원복
+  ctx.textBaseline = 'alphabetic'; 
   
-  // 상태 제목
   ctx.fillStyle = gameState.lastGrade.color;
   ctx.font = 'bold 90px Pretendard, -apple-system, sans-serif';
   ctx.fillText(gameState.lastGrade.title, canvas.width / 2, 1000);
   
-  // 지연 시간
   let delayStr = "";
   if (gameState.lastDelay < 0) {
     const earlySec = (Math.abs(gameState.lastDelay) / 1000).toFixed(3);
-    delayStr = `-${earlySec}초`;
+    const suffix = currentLang === 'ko' ? '초' : 's';
+    delayStr = `-${earlySec}${suffix}`;
     ctx.fillStyle = '#f04452';
   } else {
     delayStr = gameState.lastDelay > 3000 ? ">3000ms" : `+${Math.floor(gameState.lastDelay)}ms`;
@@ -412,19 +524,16 @@ btnShare.addEventListener('click', async () => {
   ctx.font = 'bold 160px "SF Mono", monospace';
   ctx.fillText(delayStr, canvas.width / 2, 1250);
   
-  // 메시지
   ctx.fillStyle = '#64748b';
   ctx.font = '50px Pretendard, -apple-system, sans-serif';
   ctx.fillText(gameState.lastGrade.msg, canvas.width / 2, 1400);
   
-  // URL 워터마크
   ctx.fillStyle = '#8b95a1';
   ctx.font = 'bold 45px Pretendard, -apple-system, sans-serif';
   ctx.fillText('soogang.netlify.app', canvas.width / 2, 1720);
   ctx.fillStyle = '#3182f6';
   ctx.fillText('@gemini_koreauniv', canvas.width / 2, 1790);
   
-  // Export and share
   try {
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
     const file = new File([blob], 'course-registration-result.jpg', { type: 'image/jpeg' });
@@ -432,19 +541,18 @@ btnShare.addEventListener('click', async () => {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
-        title: '수강신청 시뮬레이터 결과',
-        text: '나의 수강신청 반응속도는?'
+        title: t.shareTitle,
+        text: t.shareText
       });
       sendGAEvent('image_saved', { method: 'share' });
     } else {
-      // Fallback for download
       const link = document.createElement('a');
       link.download = 'course-registration-result.jpg';
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
       sendGAEvent('image_saved', { method: 'download' });
-      alert('이미지가 기기에 저장되었습니다.');
+      alert(t.savedMsg);
     }
   } catch (err) {
     console.error('Error sharing image:', err);
