@@ -289,15 +289,13 @@ function getGrade(delay) {
 function endGame(delay) {
   // delay == null 이면 3초 초과로 장바구니 관람객 처리
   const actualDelay = delay === null ? 3001 : delay;
-  const grade = getGrade(delay === null ? 3001 : delay);
+  const grade = getGrade(actualDelay);
   
   const statusEl = document.getElementById('result-status');
   const delayEl = document.getElementById('result-delay');
   const badgeEl = document.getElementById('result-badge');
   const msgEl = document.getElementById('result-message');
   const compareEl = document.getElementById('record-compare-container');
-  
-  // 오디오 중단 로직은 따로 넣지 않음. (이미 예약된 건 울리게 둠)
   
   statusEl.textContent = grade.title;
   statusEl.style.color = grade.color;
@@ -311,12 +309,21 @@ function endGame(delay) {
   compareEl.innerHTML = ''; // reset
   
   if (delay < 0) {
-    delayEl.textContent = "FAIL";
-    delayEl.style.color = "var(--danger-color)";
+    const earlySec = (Math.abs(actualDelay) / 1000).toFixed(3);
+    delayEl.textContent = `-${earlySec}초`;
+    delayEl.style.color = "var(--toss-danger)";
+    sendGAEvent('game_fail_early');
+    
+    // 광탈 시 공유 버튼 숨기기
+    btnShare.style.display = 'none';
   } else {
     const msStr = actualDelay > 3000 ? ">3000ms" : `+${Math.floor(actualDelay)}ms`;
     delayEl.textContent = msStr;
-    delayEl.style.color = "var(--text-main)";
+    delayEl.style.color = "var(--toss-text-title)";
+    sendGAEvent('game_complete', { grade: grade.title, delay_ms: Math.floor(actualDelay) });
+    
+    // 성공 시 공유 버튼 보이기
+    btnShare.style.display = 'block';
     
     // 최고기록 갱신 로직 (성공한 경우에만)
     if (actualDelay <= 3000) {
@@ -338,7 +345,7 @@ function endGame(delay) {
   
   // 캔버스 이미지 그리기 용도로 글로벌 저장
   gameState.lastGrade = grade;
-  gameState.lastDelay = delay;
+  gameState.lastDelay = actualDelay;
   
   switchView('result');
 }
@@ -356,7 +363,7 @@ btnShare.addEventListener('click', async () => {
   
   // 헤더
   ctx.fillStyle = '#0f172a';
-  ctx.font = 'bold 70px -apple-system, sans-serif';
+  ctx.font = 'bold 70px Pretendard, -apple-system, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('수강신청 반응속도 시뮬레이터', canvas.width / 2, 400);
   
@@ -366,7 +373,7 @@ btnShare.addEventListener('click', async () => {
   ctx.arc(canvas.width / 2, 700, 150, 0, Math.PI * 2);
   ctx.fill();
   
-  // 이모지 (뱃지) - 캔버스에서 이모지가 렌더링 안 될 수 있는 기기를 위해 텍스트 fallback 처리
+  // 이모지 (뱃지)
   ctx.font = '120px -apple-system, sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillText(gameState.lastGrade.badge, canvas.width / 2, 700);
@@ -375,14 +382,15 @@ btnShare.addEventListener('click', async () => {
   
   // 상태 제목
   ctx.fillStyle = gameState.lastGrade.color;
-  ctx.font = 'bold 90px -apple-system, sans-serif';
+  ctx.font = 'bold 90px Pretendard, -apple-system, sans-serif';
   ctx.fillText(gameState.lastGrade.title, canvas.width / 2, 1000);
   
   // 지연 시간
   let delayStr = "";
   if (gameState.lastDelay < 0) {
-    delayStr = "FAIL (광탈)";
-    ctx.fillStyle = '#ef4444';
+    const earlySec = (Math.abs(gameState.lastDelay) / 1000).toFixed(3);
+    delayStr = `-${earlySec}초`;
+    ctx.fillStyle = '#f04452';
   } else {
     delayStr = gameState.lastDelay > 3000 ? ">3000ms" : `+${Math.floor(gameState.lastDelay)}ms`;
     ctx.fillStyle = '#0f172a';
@@ -392,16 +400,15 @@ btnShare.addEventListener('click', async () => {
   
   // 메시지
   ctx.fillStyle = '#64748b';
-  ctx.font = '50px -apple-system, sans-serif';
+  ctx.font = '50px Pretendard, -apple-system, sans-serif';
   ctx.fillText(gameState.lastGrade.msg, canvas.width / 2, 1400);
   
   // URL 워터마크
-  ctx.fillStyle = '#2563eb';
-  ctx.font = 'bold 60px -apple-system, sans-serif';
-  // 사용자가 URL을 눈으로 보고 타이핑하기 쉽도록 적당한 도메인 명시
-  // 배포 도메인이 아직 확정되지 않았으므로 현재는 안내 문구 위주로 작성
-  ctx.fillText('스토리에 올릴 때 링크 스티커도', canvas.width / 2, 1700);
-  ctx.fillText('같이 달아주세요!', canvas.width / 2, 1780);
+  ctx.fillStyle = '#8b95a1';
+  ctx.font = 'bold 45px Pretendard, -apple-system, sans-serif';
+  ctx.fillText('soogang.netlify.app', canvas.width / 2, 1720);
+  ctx.fillStyle = '#3182f6';
+  ctx.fillText('@teamgemini_korea', canvas.width / 2, 1790);
   
   // Export and share
   try {
@@ -414,6 +421,7 @@ btnShare.addEventListener('click', async () => {
         title: '수강신청 시뮬레이터 결과',
         text: '나의 수강신청 반응속도는?'
       });
+      sendGAEvent('image_saved', { method: 'share' });
     } else {
       // Fallback for download
       const link = document.createElement('a');
@@ -421,10 +429,10 @@ btnShare.addEventListener('click', async () => {
       link.href = URL.createObjectURL(blob);
       link.click();
       URL.revokeObjectURL(link.href);
+      sendGAEvent('image_saved', { method: 'download' });
       alert('이미지가 기기에 저장되었습니다.');
     }
   } catch (err) {
     console.error('Error sharing image:', err);
-    // User aborted or other error. 
   }
 });
