@@ -53,22 +53,36 @@ function initPromoUI() {
   const activeMode = (CAMPAIGN_MODE === 'LIVE' && TEAM_SIGNUP_LINK) ? 'LIVE' : 'PRE_LAUNCH';
 
   if (activeMode === 'PRE_LAUNCH') {
-    promoBanners.forEach(el => el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">혜택 안내 준비 중</span>');
+    promoBanners.forEach(el => {
+      el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">인스타 팔로우하고 혜택 안내받기 👉</span>';
+      el.style.cursor = 'pointer';
+      el.onclick = () => {
+        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'banner' });
+        window.open(INSTAGRAM_URL, '_blank');
+      };
+    });
     if (ctaBody) ctaBody.innerHTML = '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.';
     if (btnCta) {
       btnCta.textContent = '인스타그램 팔로우하고 소식 받기';
       btnCta.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH' });
+        sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'result_cta' });
         window.open(INSTAGRAM_URL, '_blank');
       };
     }
   } else {
-    promoBanners.forEach(el => el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료');
+    promoBanners.forEach(el => {
+      el.innerHTML = '대학생·대학원생 Google AI Plus 12개월 무료<br><span class="banner-sub">12개월 무료 혜택 바로가기 👉</span>';
+      el.style.cursor = 'pointer';
+      el.onclick = () => {
+        sendGAEvent('cta_click', { mode: 'LIVE', source: 'banner' });
+        window.open(TEAM_SIGNUP_LINK, '_blank');
+      };
+    });
     if (ctaBody) ctaBody.innerHTML = '대학생·대학원생은 Google AI Plus를 12개월 무료로 쓸 수 있어요.';
     if (btnCta) {
       btnCta.textContent = '12개월 무료로 시작하기';
       btnCta.onclick = () => {
-        sendGAEvent('cta_click', { mode: 'LIVE' });
+        sendGAEvent('cta_click', { mode: 'LIVE', source: 'result_cta' });
         window.open(TEAM_SIGNUP_LINK, '_blank');
       };
     }
