@@ -117,10 +117,11 @@ const i18n = {
   }
 };
 
-let currentLang = 'ko';
+let currentLang = localStorage.getItem('courseRegLang') || 'ko';
 
 function setLang(lang) {
   currentLang = lang;
+  localStorage.setItem('courseRegLang', lang);
   
   // Update lang buttons
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -233,7 +234,7 @@ function initLanding() {
   switchView('landing');
 }
 
-setLang('ko'); // initialize defaults
+setLang(currentLang); // initialize defaults
 
 // View Switcher
 function switchView(viewName) {
