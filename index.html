@@ -21,12 +21,7 @@
   <div id="app">
     <!-- View 1: Landing -->
     <div id="view-landing" class="view active">
-      <div class="gsa-badge">
-        <span class="gsa-logo">
-          <span style="color:#4285F4">G</span><span style="color:#EA4335">S</span><span style="color:#FBBC05">A</span>
-        </span>
-        <span class="gsa-text">made by Google Student Ambassador Team고려대</span>
-      </div>
+      
       <div class="lang-toggle">
         <button class="lang-btn active" data-lang="ko" onclick="setLang('ko')">🇰🇷</button>
         <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇺🇸</button>
@@ -47,7 +42,10 @@
         <div class="promo-banner-global"></div>
 
         <div class="leaderboard-container">
-          <h3 data-i18n="leaderboardTitle">🔥 오늘의 Top 5</h3>
+          <div class="leaderboard-title-wrapper">
+            <h3 data-i18n="leaderboardTitle">🔥 오늘의 Top 5</h3>
+            <span class="reset-notice">매일 00시 기록이 초기화됩니다</span>
+          </div>
           <ul id="leaderboard-list" class="leaderboard-list">
             <!-- 랭킹 아이템들이 여기에 렌더링됩니다 -->
             <li class="empty-leaderboard" data-i18n="leaderboardEmpty">아직 기록이 없습니다. 첫 기록의 주인공이 되어보세요!</li>
