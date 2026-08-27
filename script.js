@@ -39,7 +39,7 @@ const i18n = {
     btnShare: '스토리에 공유하기',
     btnRetry: '다시 하기',
     promoBannerTitle: '대학생/대학원생이라면 Google AI plus 1년 무료',
-    promoBannerSubPre: '인스타 프로필 링크에서 바로 수령 가능!',
+    promoBannerSubPre: '터치하면 바로 수령 가능',
     promoBannerSubLive: '12개월 무료 혜택 바로가기 👉',
     ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다',
     ctaBodyPre: '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.',

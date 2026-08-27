@@ -91,11 +91,12 @@ h2 {
 /* 랜딩 화면 */
 .rules {
   background: var(--toss-bg);
-  padding: 1rem 1.25rem;
-  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
   list-style: none;
   margin-bottom: 1rem;
   font-weight: 500;
+  font-size: 0.85rem;
 }
 
 .rules li {
@@ -389,19 +390,19 @@ button:active {
 
 /* Leaderboard */
 .leaderboard-container {
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
   background: var(--toss-surface);
   border: 1px solid #e5e8eb;
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .leaderboard-container h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: var(--toss-text-title);
   text-align: left;
 }
@@ -416,8 +417,9 @@ button:active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 0.35rem 0;
   border-bottom: 1px solid #f2f4f6;
+  font-size: 0.9rem;
 }
 
 .leaderboard-item:last-child {
@@ -561,4 +563,21 @@ button:active {
 
 .all-time-content .rank-delay {
   font-size: 1.05rem;
+}
+
+.gsa-badge {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--toss-text-muted);
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+}
+.gsa-logo {
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: -0.5px;
 }
