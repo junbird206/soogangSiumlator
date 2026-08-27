@@ -67,7 +67,16 @@ const i18n = {
     shareTitle: '수강신청 시뮬레이터 결과',
     shareText: '나의 수강신청 반응속도는?',
     savedMsg: '이미지가 기기에 저장되었습니다.',
-    canvasTitle: '수강신청 반응속도 시뮬레이터'
+    canvasTitle: '수강신청 반응속도 시뮬레이터',
+    leaderboardTitle: '🔥 오늘의 Top 5',
+    leaderboardEmpty: '아직 기록이 없습니다. 첫 기록의 주인공이 되어보세요!',
+    nicknameTitle: '명예의 전당에 기록 남기기',
+    btnSaveRecord: '저장',
+    nicknameErrorLength: '닉네임은 1~10자로 입력해주세요.',
+    nicknameErrorProfanity: '부적절한 단어가 포함되어 있습니다.',
+    nicknameSuccess: '기록이 저장되었습니다!',
+    reportConfirm: '이 닉네임을 신고하시겠습니까?',
+    reportSuccess: '신고가 접수되었습니다.'
   },
   en: {
     title: '<img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">Registration Simulator',
@@ -113,7 +122,16 @@ const i18n = {
     shareTitle: 'Registration Simulator Result',
     shareText: 'What is my reaction speed?',
     savedMsg: 'Image saved to device.',
-    canvasTitle: 'Registration Simulator'
+    canvasTitle: 'Registration Simulator',
+    leaderboardTitle: '🔥 Today\'s Top 5',
+    leaderboardEmpty: 'No records yet. Be the first!',
+    nicknameTitle: 'Leave your mark in the Hall of Fame',
+    btnSaveRecord: 'Save',
+    nicknameErrorLength: 'Nickname must be 1-10 chars.',
+    nicknameErrorProfanity: 'Inappropriate words detected.',
+    nicknameSuccess: 'Record saved!',
+    reportConfirm: 'Report this nickname?',
+    reportSuccess: 'Report submitted.'
   }
 };
 
@@ -450,6 +468,7 @@ function endGame(delay) {
     sendGAEvent('game_fail_early');
     
     btnShare.style.display = 'none';
+    document.getElementById('nickname-form-container').style.display = 'none';
   } else {
     const msStr = actualDelay > 3000 ? ">3000ms" : `+${Math.floor(actualDelay)}ms`;
     delayEl.textContent = msStr;
@@ -472,6 +491,16 @@ function endGame(delay) {
       } else {
         compareEl.innerHTML = `${t.myBest} ${gameState.bestRecord}ms`;
       }
+      
+      // Show nickname form
+      document.getElementById('nickname-form-container').style.display = 'block';
+      document.getElementById('nickname-input').value = '';
+      document.getElementById('nickname-input').disabled = false;
+      document.getElementById('btn-save-record').style.display = 'block';
+      document.getElementById('btn-save-record').disabled = false;
+      document.getElementById('nickname-error').textContent = '';
+    } else {
+      document.getElementById('nickname-form-container').style.display = 'none';
     }
   }
   
@@ -559,3 +588,165 @@ btnShare.addEventListener('click', async () => {
     console.error('Error sharing image:', err);
   }
 });
+
+// --- Firebase & Leaderboard Logic ---
+let db = null;
+let fbUtils = null;
+const bannedWords = /(씨발|개새끼|지랄|병신|좆|섹스|미친|애미|애비|창녀)/i;
+
+async function initFirebase() {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js");
+    const fb = await import("https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js");
+    
+    // TODO: 넷리파이 환경변수나 빌드 과정에서 주입할 Firebase 설정 (임시)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    db = fb.getFirestore(app);
+    fbUtils = fb;
+    
+    // Firebase가 성공적으로 연결되면 랭킹을 로드합니다.
+    loadTopRecords();
+  } catch(e) {
+    console.warn("Firebase Init Error (API keys not set yet).", e);
+  }
+}
+initFirebase();
+
+function getTodayString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+async function loadTopRecords() {
+  const listEl = document.getElementById('leaderboard-list');
+  if (!db || !fbUtils) {
+    listEl.innerHTML = `<li class="empty-leaderboard">🔥 DB 연동 대기 중 (Firebase 설정 필요)</li>`;
+    return;
+  }
+  
+  try {
+    const q = fbUtils.query(
+      fbUtils.collection(db, 'leaderboard'),
+      fbUtils.where('dateString', '==', getTodayString()),
+      fbUtils.orderBy('delayMs', 'asc'),
+      fbUtils.limit(5)
+    );
+    const snapshot = await fbUtils.getDocs(q);
+    
+    if (snapshot.empty) {
+      listEl.innerHTML = `<li class="empty-leaderboard" data-i18n="leaderboardEmpty">${i18n[currentLang].leaderboardEmpty}</li>`;
+      return;
+    }
+
+    listEl.innerHTML = '';
+    let rank = 1;
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const li = document.createElement('li');
+      li.className = 'leaderboard-item';
+      
+      const timeStr = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleTimeString(currentLang === 'ko' ? 'ko-KR' : 'en-US', {hour: '2-digit', minute:'2-digit'}) : '';
+      
+      li.innerHTML = `
+        <div class="rank-info">
+          <span class="rank-num">${rank}</span>
+          <span class="rank-name">${escapeHTML(data.nickname)}</span>
+        </div>
+        <div class="rank-score">
+          <span class="rank-delay">+${data.delayMs}ms</span>
+          <span class="rank-time">${timeStr}</span>
+          <button class="btn-report" onclick="reportRecord('${doc.id}', '${escapeHTML(data.nickname)}')">🚨</button>
+        </div>
+      `;
+      listEl.appendChild(li);
+      rank++;
+    });
+  } catch(e) {
+    console.warn("Failed to load leaderboard:", e);
+  }
+}
+
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
+// Result Page Nickname Form Logic
+const btnSaveRecord = document.getElementById('btn-save-record');
+const nicknameInput = document.getElementById('nickname-input');
+const errorMsgEl = document.getElementById('nickname-error');
+
+btnSaveRecord.addEventListener('click', async () => {
+  const nickname = nicknameInput.value.trim();
+  const t = i18n[currentLang];
+  
+  if (nickname.length < 1 || nickname.length > 10) {
+    errorMsgEl.textContent = t.nicknameErrorLength;
+    return;
+  }
+  
+  if (bannedWords.test(nickname)) {
+    errorMsgEl.textContent = t.nicknameErrorProfanity;
+    return;
+  }
+
+  if (!db || !fbUtils) {
+    errorMsgEl.textContent = "DB not connected.";
+    return;
+  }
+
+  btnSaveRecord.disabled = true;
+  try {
+    await fbUtils.addDoc(fbUtils.collection(db, 'leaderboard'), {
+      nickname: nickname,
+      delayMs: gameState.lastDelay,
+      dateString: getTodayString(),
+      createdAt: fbUtils.serverTimestamp()
+    });
+    errorMsgEl.textContent = t.nicknameSuccess;
+    errorMsgEl.style.color = "var(--toss-blue)";
+    btnSaveRecord.style.display = 'none';
+    nicknameInput.disabled = true;
+  } catch(e) {
+    console.error(e);
+    errorMsgEl.textContent = "Error saving record.";
+    btnSaveRecord.disabled = false;
+  }
+});
+
+window.reportRecord = async function(recordId, nickname) {
+  const t = i18n[currentLang];
+  if (!confirm(t.reportConfirm)) return;
+  
+  if (!db || !fbUtils) return;
+  try {
+    await fbUtils.addDoc(fbUtils.collection(db, 'reports'), {
+      recordId: recordId,
+      reportedNickname: nickname,
+      reason: 'User report from frontend',
+      createdAt: fbUtils.serverTimestamp()
+    });
+    alert(t.reportSuccess);
+  } catch(e) {
+    console.warn("Report failed:", e);
+  }
+}

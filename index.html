@@ -41,6 +41,14 @@
         <div class="record-container" id="best-record-container" style="display: none;">
           <p><span data-i18n="bestRecordLabel">🏆 내 최고 기록:</span> <span id="best-record-text"></span></p>
         </div>
+
+        <div class="leaderboard-container">
+          <h3 data-i18n="leaderboardTitle">🔥 오늘의 Top 5</h3>
+          <ul id="leaderboard-list" class="leaderboard-list">
+            <!-- 랭킹 아이템들이 여기에 렌더링됩니다 -->
+            <li class="empty-leaderboard" data-i18n="leaderboardEmpty">아직 기록이 없습니다. 첫 기록의 주인공이 되어보세요!</li>
+          </ul>
+        </div>
       </main>
 
       <footer>
@@ -86,6 +94,15 @@
         <p id="result-message" class="message-text"></p>
         
         <div class="record-compare" id="record-compare-container"></div>
+        
+        <div id="nickname-form-container" class="nickname-container" style="display: none;">
+          <h4 data-i18n="nicknameTitle">명예의 전당에 기록 남기기</h4>
+          <div class="nickname-input-group">
+            <input type="text" id="nickname-input" maxlength="10" placeholder="닉네임 (최대 10자)" />
+            <button id="btn-save-record" class="primary-btn" data-i18n="btnSaveRecord">저장</button>
+          </div>
+          <p id="nickname-error" class="error-msg"></p>
+        </div>
         
         <div class="action-buttons">
           <button id="btn-share" class="primary-btn lg-btn" style="margin-bottom: 0.75rem;" data-i18n="btnShare">스토리에 공유하기</button>

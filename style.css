@@ -386,3 +386,144 @@ button:active {
   background: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+/* Leaderboard */
+.leaderboard-container {
+  margin-top: 2rem;
+  background: var(--toss-surface);
+  border: 1px solid #e5e8eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.leaderboard-container h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--toss-text-title);
+  text-align: left;
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f2f4f6;
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rank-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rank-num {
+  font-weight: 800;
+  color: var(--toss-blue);
+  width: 1.5rem;
+}
+
+.rank-name {
+  font-weight: 600;
+  color: var(--toss-text-title);
+}
+
+.rank-score {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rank-delay {
+  font-family: "SF Mono", monospace;
+  font-weight: 700;
+  color: var(--toss-text-title);
+}
+
+.rank-time {
+  font-size: 0.8rem;
+  color: var(--toss-text-muted);
+}
+
+.btn-report {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 0;
+}
+
+.btn-report:hover {
+  opacity: 1;
+}
+
+.empty-leaderboard {
+  text-align: center;
+  color: var(--toss-text-muted);
+  font-size: 0.95rem;
+  padding: 1rem 0;
+}
+
+/* Nickname Form */
+.nickname-container {
+  margin-bottom: 2rem;
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.nickname-container h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  color: var(--toss-text-title);
+}
+
+.nickname-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#nickname-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+#nickname-input:focus {
+  border-color: var(--toss-blue);
+}
+
+#btn-save-record {
+  width: auto;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.error-msg {
+  color: var(--toss-danger);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: left;
+  min-height: 1.2rem;
+}
