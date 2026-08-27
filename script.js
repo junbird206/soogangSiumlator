@@ -601,12 +601,13 @@ async function initFirebase() {
     
     // TODO: 넷리파이 환경변수나 빌드 과정에서 주입할 Firebase 설정 (임시)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyDly5zP0XdQ0O_PhVUaLQPXA35gfc07a3U",
+      authDomain: "soogangsimulator.firebaseapp.com",
+      projectId: "soogangsimulator",
+      storageBucket: "soogangsimulator.firebasestorage.app",
+      messagingSenderId: "406098798620",
+      appId: "1:406098798620:web:175dd0011f1c0e523b17d9",
+      measurementId: "G-T5HRH9NKGH"
     };
 
     const app = initializeApp(firebaseConfig);
