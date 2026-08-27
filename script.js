@@ -592,7 +592,7 @@ btnShare.addEventListener('click', async () => {
 });
 
 // --- Supabase & Leaderboard Logic ---
-let supabase = null;
+let supabaseClient = null;
 const bannedWords = /(씨발|개새끼|지랄|병신|좆|섹스|미친|애미|애비|창녀)/i;
 
 async function initSupabase() {
@@ -606,7 +606,7 @@ async function initSupabase() {
       return;
     }
 
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Supabase 연결되면 랭킹 로드
     loadTopRecords();
@@ -626,7 +626,7 @@ function getTodayString() {
 
 async function loadTopRecords() {
   const listEl = document.getElementById('leaderboard-list');
-  if (!supabase) {
+  if (!supabaseClient) {
     listEl.innerHTML = `<li class="empty-leaderboard">🔥 DB 연동 대기 중 (Supabase 설정 필요)</li>`;
     return;
   }
@@ -634,7 +634,7 @@ async function loadTopRecords() {
   try {
     const todayStr = getTodayString();
     
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('leaderboard')
       .select('*')
       .eq('dateString', todayStr)
@@ -706,7 +706,7 @@ btnSaveRecord.addEventListener('click', async () => {
     return;
   }
 
-  if (!supabase) {
+  if (!supabaseClient) {
     errorMsgEl.textContent = "DB not connected.";
     return;
   }
@@ -718,7 +718,7 @@ btnSaveRecord.addEventListener('click', async () => {
   try {
     const todayStr = getTodayString();
     
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('leaderboard')
       .insert([
         {
@@ -750,9 +750,9 @@ window.reportRecord = async function(recordId, nickname) {
   const t = i18n[currentLang];
   if (!confirm(t.reportConfirm)) return;
   
-  if (!supabase) return;
+  if (!supabaseClient) return;
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('reports')
       .insert([
         {
