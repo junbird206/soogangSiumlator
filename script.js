@@ -591,38 +591,30 @@ btnShare.addEventListener('click', async () => {
   }
 });
 
-// --- Firebase & Leaderboard Logic ---
-let db = null;
-let fbUtils = null;
+// --- Supabase & Leaderboard Logic ---
+let supabase = null;
 const bannedWords = /(씨발|개새끼|지랄|병신|좆|섹스|미친|애미|애비|창녀)/i;
 
-async function initFirebase() {
+async function initSupabase() {
   try {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js");
-    const fb = await import("https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js");
+    // TODO: 넷리파이 환경변수나 빌드 과정에서 주입할 Supabase 설정 (임시 플레이스홀더)
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
     
-    // TODO: 넷리파이 환경변수나 빌드 과정에서 주입할 Firebase 설정 (임시)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDly5zP0XdQ0O_PhVUaLQPXA35gfc07a3U",
-      authDomain: "soogangsimulator.firebaseapp.com",
-      projectId: "soogangsimulator",
-      storageBucket: "soogangsimulator.firebasestorage.app",
-      messagingSenderId: "406098798620",
-      appId: "1:406098798620:web:175dd0011f1c0e523b17d9",
-      measurementId: "G-T5HRH9NKGH"
-    };
+    if (typeof window.supabase === 'undefined') {
+      console.warn("Supabase SDK not loaded.");
+      return;
+    }
 
-    const app = initializeApp(firebaseConfig);
-    db = fb.getFirestore(app);
-    fbUtils = fb;
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Firebase가 성공적으로 연결되면 랭킹을 로드합니다.
+    // Supabase 연결되면 랭킹 로드
     loadTopRecords();
   } catch(e) {
-    console.warn("Firebase Init Error (API keys not set yet).", e);
+    console.warn("Supabase Init Error.", e);
   }
 }
-initFirebase();
+initSupabase();
 
 function getTodayString() {
   const d = new Date();
@@ -634,44 +626,45 @@ function getTodayString() {
 
 async function loadTopRecords() {
   const listEl = document.getElementById('leaderboard-list');
-  if (!db || !fbUtils) {
-    listEl.innerHTML = `<li class="empty-leaderboard">🔥 DB 연동 대기 중 (Firebase 설정 필요)</li>`;
+  if (!supabase) {
+    listEl.innerHTML = `<li class="empty-leaderboard">🔥 DB 연동 대기 중 (Supabase 설정 필요)</li>`;
     return;
   }
   
   try {
-    // 날짜별 하위 컬렉션을 사용하여 복합 인덱스(Composite Index) 에러 방지
     const todayStr = getTodayString();
-    const q = fbUtils.query(
-      fbUtils.collection(db, `leaderboard_daily/${todayStr}/records`),
-      fbUtils.orderBy('delayMs', 'asc'),
-      fbUtils.limit(5)
-    );
-    const snapshot = await fbUtils.getDocs(q);
     
-    if (snapshot.empty) {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .eq('dateString', todayStr)
+      .order('delayMs', { ascending: true })
+      .limit(5);
+      
+    if (error) throw error;
+    
+    if (!data || data.length === 0) {
       listEl.innerHTML = `<li class="empty-leaderboard" data-i18n="leaderboardEmpty">${i18n[currentLang].leaderboardEmpty}</li>`;
       return;
     }
 
     listEl.innerHTML = '';
     let rank = 1;
-    snapshot.forEach(doc => {
-      const data = doc.data();
+    data.forEach(doc => {
       const li = document.createElement('li');
       li.className = 'leaderboard-item';
       
-      const timeStr = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleTimeString(currentLang === 'ko' ? 'ko-KR' : 'en-US', {hour: '2-digit', minute:'2-digit'}) : '';
+      const timeStr = doc.createdAt ? new Date(doc.createdAt).toLocaleTimeString(currentLang === 'ko' ? 'ko-KR' : 'en-US', {hour: '2-digit', minute:'2-digit'}) : '';
       
       li.innerHTML = `
         <div class="rank-info">
           <span class="rank-num">${rank}</span>
-          <span class="rank-name">${escapeHTML(data.nickname)}</span>
+          <span class="rank-name">${escapeHTML(doc.nickname)}</span>
         </div>
         <div class="rank-score">
-          <span class="rank-delay">+${data.delayMs}ms</span>
+          <span class="rank-delay">+${doc.delayMs}ms</span>
           <span class="rank-time">${timeStr}</span>
-          <button class="btn-report" onclick="reportRecord('${doc.id}', '${escapeHTML(data.nickname)}')">🚨</button>
+          <button class="btn-report" onclick="reportRecord('${doc.id || ''}', '${escapeHTML(doc.nickname)}')">🚨</button>
         </div>
       `;
       listEl.appendChild(li);
@@ -713,7 +706,7 @@ btnSaveRecord.addEventListener('click', async () => {
     return;
   }
 
-  if (!db || !fbUtils) {
+  if (!supabase) {
     errorMsgEl.textContent = "DB not connected.";
     return;
   }
@@ -724,11 +717,34 @@ btnSaveRecord.addEventListener('click', async () => {
 
   try {
     const todayStr = getTodayString();
-    await fbUtils.addDoc(fbUtils.collection(db, `leaderboard_daily/${todayStr}/records`), {
-      nickname: nickname,
-      delayMs: gameState.lastDelay,
-      createdAt: fbUtils.serverTimestamp()
-    });
+    
+    const { error } = await supabase
+      .from('leaderboard')
+      .insert([
+        {
+          nickname: nickname,
+          delayMs: gameState.lastDelay,
+          dateString: todayStr
+        }
+      ]);
+      
+    if (error) throw error;
+    
+    // 저장 성공 시 UI 업데이트
+    errorMsgEl.style.color = "var(--toss-blue)";
+    errorMsgEl.textContent = t.nicknameSuccess;
+    btnSaveRecord.style.display = 'none';
+    nicknameInput.disabled = true;
+    
+    // 리더보드 새로고침
+    loadTopRecords();
+  } catch(e) {
+    console.error(e);
+    errorMsgEl.style.color = "var(--toss-danger)";
+    errorMsgEl.textContent = "저장 실패. 잠시 후 다시 시도해주세요.";
+    btnSaveRecord.disabled = false;
+  }
+});
     
     // 저장 성공 시 UI 업데이트
     errorMsgEl.style.color = "var(--toss-blue)";
@@ -750,15 +766,26 @@ window.reportRecord = async function(recordId, nickname) {
   const t = i18n[currentLang];
   if (!confirm(t.reportConfirm)) return;
   
-  if (!db || !fbUtils) return;
+  if (!supabase) return;
   try {
-    await fbUtils.addDoc(fbUtils.collection(db, 'reports'), {
-      recordId: recordId,
-      dateString: getTodayString(),
-      reportedNickname: nickname,
-      reason: 'User report from frontend',
-      createdAt: fbUtils.serverTimestamp()
-    });
+    const { error } = await supabase
+      .from('reports')
+      .insert([
+        {
+          recordId: recordId,
+          dateString: getTodayString(),
+          reportedNickname: nickname,
+          reason: 'User report from frontend'
+        }
+      ]);
+      
+    if (error) throw error;
+    
+    alert(t.reportSuccess);
+  } catch(e) {
+    console.warn("Report failed:", e);
+  }
+});
     alert(t.reportSuccess);
   } catch(e) {
     console.warn("Report failed:", e);
