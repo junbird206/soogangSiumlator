@@ -18,7 +18,9 @@ let gameState = {
   bestRecord: localStorage.getItem('courseRegBestRecord') ? parseInt(localStorage.getItem('courseRegBestRecord')) : null,
   animationFrameId: null,
   lastGrade: null,
-  lastDelay: null
+  lastDelay: null,
+  currentTop5Count: 0,
+  current5thPlaceDelay: Infinity
 };
 
 // i18n
@@ -632,6 +634,13 @@ async function loadTopRecords() {
       
     if (error) throw error;
     
+    gameState.currentTop5Count = data ? data.length : 0;
+    if (gameState.currentTop5Count === 5) {
+      gameState.current5thPlaceDelay = data[4].delayMs;
+    } else {
+      gameState.current5thPlaceDelay = Infinity;
+    }
+    
     if (!data || data.length === 0) {
       listEl.innerHTML = `<li class="empty-leaderboard" data-i18n="leaderboardEmpty">${i18n[currentLang].leaderboardEmpty}</li>`;
       return;
@@ -742,6 +751,15 @@ btnSaveRecord.addEventListener('click', async () => {
 
   if (!supabaseClient) {
     errorMsgEl.textContent = "DB not connected.";
+    return;
+  }
+
+  // Top 5 밖의 기록은 DB 저장 생략 (트래픽 비용 절감), 프론트엔드에서는 성공 처리
+  if (gameState.currentTop5Count === 5 && gameState.lastDelay >= gameState.current5thPlaceDelay) {
+    errorMsgEl.style.color = "var(--toss-blue)";
+    errorMsgEl.textContent = t.nicknameSuccess;
+    btnSaveRecord.style.display = 'none';
+    nicknameInput.disabled = true;
     return;
   }
 
