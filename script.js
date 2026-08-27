@@ -653,20 +653,41 @@ async function loadTopRecords() {
     data.forEach(doc => {
       const li = document.createElement('li');
       li.className = 'leaderboard-item';
+      li.style.cursor = 'pointer';
+      li.style.userSelect = 'none';
       
       const timeStr = doc.createdAt ? new Date(doc.createdAt).toLocaleTimeString(currentLang === 'ko' ? 'ko-KR' : 'en-US', {hour: '2-digit', minute:'2-digit'}) : '';
+      const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
       
       li.innerHTML = `
         <div class="rank-info">
-          <span class="rank-num">${rank}</span>
+          <span class="rank-num ${rankClass}">${rank}</span>
           <span class="rank-name">${escapeHTML(doc.nickname)}</span>
         </div>
         <div class="rank-score">
-          <span class="rank-delay">+${doc.delayMs}ms</span>
+          <span class="rank-delay">+${Number(doc.delayMs).toFixed(1)}ms</span>
           <span class="rank-time">${timeStr}</span>
-          <button class="btn-report" onclick="reportRecord('${doc.id || ''}', '${escapeHTML(doc.nickname)}')">🚨</button>
         </div>
       `;
+      
+      // 꾹 누르기 (롱프레스) 신고 기능
+      let pressTimer;
+      const startPress = (e) => {
+        pressTimer = window.setTimeout(() => {
+          reportRecord(doc.id || '', doc.nickname);
+        }, 800);
+      };
+      const cancelPress = () => {
+        clearTimeout(pressTimer);
+      };
+      
+      li.addEventListener('mousedown', startPress);
+      li.addEventListener('touchstart', startPress, {passive: true});
+      li.addEventListener('mouseup', cancelPress);
+      li.addEventListener('mouseleave', cancelPress);
+      li.addEventListener('touchend', cancelPress);
+      li.addEventListener('touchcancel', cancelPress);
+
       listEl.appendChild(li);
       rank++;
     });
