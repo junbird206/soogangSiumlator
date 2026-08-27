@@ -249,6 +249,7 @@ function initLanding() {
   } else {
     bestRecordContainer.style.display = 'none';
   }
+  loadTopRecords(); // Reload leaderboard every time we go to landing
   switchView('landing');
 }
 
@@ -499,6 +500,7 @@ function endGame(delay) {
       document.getElementById('btn-save-record').style.display = 'block';
       document.getElementById('btn-save-record').disabled = false;
       document.getElementById('nickname-error').textContent = '';
+      document.getElementById('nickname-error').style.color = "var(--toss-danger)";
     } else {
       document.getElementById('nickname-form-container').style.display = 'none';
     }
@@ -716,6 +718,9 @@ btnSaveRecord.addEventListener('click', async () => {
   }
 
   btnSaveRecord.disabled = true;
+  errorMsgEl.style.color = "var(--toss-text-muted)";
+  errorMsgEl.textContent = "저장 중...";
+
   try {
     await fbUtils.addDoc(fbUtils.collection(db, 'leaderboard'), {
       nickname: nickname,
@@ -723,13 +728,19 @@ btnSaveRecord.addEventListener('click', async () => {
       dateString: getTodayString(),
       createdAt: fbUtils.serverTimestamp()
     });
-    errorMsgEl.textContent = t.nicknameSuccess;
+    
+    // 저장 성공 시 UI 업데이트
     errorMsgEl.style.color = "var(--toss-blue)";
+    errorMsgEl.textContent = t.nicknameSuccess;
     btnSaveRecord.style.display = 'none';
     nicknameInput.disabled = true;
+    
+    // 리더보드 새로고침
+    loadTopRecords();
   } catch(e) {
     console.error(e);
-    errorMsgEl.textContent = "Error saving record.";
+    errorMsgEl.style.color = "var(--toss-danger)";
+    errorMsgEl.textContent = "저장 실패. 잠시 후 다시 시도해주세요.";
     btnSaveRecord.disabled = false;
   }
 });
