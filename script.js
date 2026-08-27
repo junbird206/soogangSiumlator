@@ -745,22 +745,6 @@ btnSaveRecord.addEventListener('click', async () => {
     btnSaveRecord.disabled = false;
   }
 });
-    
-    // 저장 성공 시 UI 업데이트
-    errorMsgEl.style.color = "var(--toss-blue)";
-    errorMsgEl.textContent = t.nicknameSuccess;
-    btnSaveRecord.style.display = 'none';
-    nicknameInput.disabled = true;
-    
-    // 리더보드 새로고침
-    loadTopRecords();
-  } catch(e) {
-    console.error(e);
-    errorMsgEl.style.color = "var(--toss-danger)";
-    errorMsgEl.textContent = "저장 실패. 잠시 후 다시 시도해주세요.";
-    btnSaveRecord.disabled = false;
-  }
-});
 
 window.reportRecord = async function(recordId, nickname) {
   const t = i18n[currentLang];
@@ -781,11 +765,6 @@ window.reportRecord = async function(recordId, nickname) {
       
     if (error) throw error;
     
-    alert(t.reportSuccess);
-  } catch(e) {
-    console.warn("Report failed:", e);
-  }
-});
     alert(t.reportSuccess);
   } catch(e) {
     console.warn("Report failed:", e);
