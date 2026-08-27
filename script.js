@@ -164,10 +164,7 @@ function setLang(lang) {
   
   // Re-init promos and dynamic elements
   initPromoUI();
-  if (gameState.bestRecord !== null) {
-    const bestRecordText = document.getElementById('best-record-text');
-    bestRecordText.textContent = `${gameState.bestRecord}ms`;
-  }
+
 }
 
 // DOM Elements
