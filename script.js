@@ -640,9 +640,10 @@ async function loadTopRecords() {
   }
   
   try {
+    // 날짜별 하위 컬렉션을 사용하여 복합 인덱스(Composite Index) 에러 방지
+    const todayStr = getTodayString();
     const q = fbUtils.query(
-      fbUtils.collection(db, 'leaderboard'),
-      fbUtils.where('dateString', '==', getTodayString()),
+      fbUtils.collection(db, `leaderboard_daily/${todayStr}/records`),
       fbUtils.orderBy('delayMs', 'asc'),
       fbUtils.limit(5)
     );
@@ -722,10 +723,10 @@ btnSaveRecord.addEventListener('click', async () => {
   errorMsgEl.textContent = "저장 중...";
 
   try {
-    await fbUtils.addDoc(fbUtils.collection(db, 'leaderboard'), {
+    const todayStr = getTodayString();
+    await fbUtils.addDoc(fbUtils.collection(db, `leaderboard_daily/${todayStr}/records`), {
       nickname: nickname,
       delayMs: gameState.lastDelay,
-      dateString: getTodayString(),
       createdAt: fbUtils.serverTimestamp()
     });
     
@@ -753,6 +754,7 @@ window.reportRecord = async function(recordId, nickname) {
   try {
     await fbUtils.addDoc(fbUtils.collection(db, 'reports'), {
       recordId: recordId,
+      dateString: getTodayString(),
       reportedNickname: nickname,
       reason: 'User report from frontend',
       createdAt: fbUtils.serverTimestamp()
