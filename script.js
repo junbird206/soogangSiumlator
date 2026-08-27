@@ -598,8 +598,8 @@ const bannedWords = /(씨발|개새끼|지랄|병신|좆|섹스|미친|애미|�
 async function initSupabase() {
   try {
     // TODO: 넷리파이 환경변수나 빌드 과정에서 주입할 Supabase 설정 (임시 플레이스홀더)
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const SUPABASE_URL = "https://sehpkoxaurxqdesonbmc.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_W445M3ZkB1JtK6ygJiJkWw_-osa23Bn";
     
     if (typeof window.supabase === 'undefined') {
       console.warn("Supabase SDK not loaded.");

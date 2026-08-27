@@ -390,6 +390,7 @@ button:active {
 /* Leaderboard */
 .leaderboard-container {
   margin-top: 2rem;
+  margin-bottom: 2.5rem;
   background: var(--toss-surface);
   border: 1px solid #e5e8eb;
   border-radius: 16px;
