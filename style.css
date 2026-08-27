@@ -62,7 +62,7 @@ body {
 
 /* 공통 헤더 */
 header {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   padding-top: 1rem;
 }
 
@@ -91,10 +91,10 @@ h2 {
 /* 랜딩 화면 */
 .rules {
   background: var(--toss-bg);
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   border-radius: 16px;
   list-style: none;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   font-weight: 500;
 }
 
@@ -118,10 +118,10 @@ h2 {
 }
 
 .record-container {
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   background: rgba(49, 130, 246, 0.08);
   border-radius: 16px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   font-weight: 700;
   color: var(--toss-blue);
   display: flex;
@@ -389,12 +389,12 @@ button:active {
 
 /* Leaderboard */
 .leaderboard-container {
-  margin-top: 2rem;
-  margin-bottom: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   background: var(--toss-surface);
   border: 1px solid #e5e8eb;
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
@@ -416,7 +416,7 @@ button:active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid #f2f4f6;
 }
 
@@ -472,9 +472,9 @@ button:active {
 
 /* Nickname Form */
 .nickname-container {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   background: #f8fafc;
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   border-radius: 12px;
   width: 100%;
 }

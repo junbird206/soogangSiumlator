@@ -25,7 +25,7 @@ let gameState = {
 const i18n = {
   ko: {
     title: '<img src="img/dino.png" alt="dino" style="width: 48px; vertical-align: bottom; margin-right: 4px;">수강신청 시뮬레이터',
-    subtitle: '10시 정각, 몇 밀리초 만에 누를 수 있나요?',
+    subtitle: '전국에서 수강신청 젤 잘하는 사람은 누구?',
     rule1: '<strong>버튼은 딱 한 번만 누를 수 있습니다.</strong> 연타 불가.',
     rule2: '<strong>정각 전 클릭은 광탈입니다.</strong>',
     rule3: '<strong>소리를 켜주세요.</strong> 5초 전부터 비프음이 울립니다.',
@@ -38,8 +38,8 @@ const i18n = {
     btnAction: '수강신청',
     btnShare: '스토리에 공유하기',
     btnRetry: '다시 하기',
-    promoBannerTitle: '대학생·대학원생 Google AI Plus 12개월 무료',
-    promoBannerSubPre: '인스타 팔로우하고 혜택 안내받기 👉',
+    promoBannerTitle: '대학생/대학원생이라면 Google AI plus 1년 무료',
+    promoBannerSubPre: '인스타 프로필 링크에서 바로 수령 가능!',
     promoBannerSubLive: '12개월 무료 혜택 바로가기 👉',
     ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다',
     ctaBodyPre: '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.',
@@ -185,8 +185,6 @@ const btnStart = document.getElementById('btn-start');
 const btnRetry = document.getElementById('btn-retry');
 const btnShare = document.getElementById('btn-share');
 
-const bestRecordContainer = document.getElementById('best-record-container');
-const bestRecordText = document.getElementById('best-record-text');
 
 // GA4 Tracker
 function sendGAEvent(eventName, params = {}) {
@@ -243,12 +241,6 @@ function initPromoUI() {
 
 // Initialize Landing
 function initLanding() {
-  if (gameState.bestRecord !== null) {
-    bestRecordContainer.style.display = 'block';
-    bestRecordText.textContent = `${gameState.bestRecord}ms`;
-  } else {
-    bestRecordContainer.style.display = 'none';
-  }
   loadTopRecords(); // Reload leaderboard every time we go to landing
   switchView('landing');
 }
