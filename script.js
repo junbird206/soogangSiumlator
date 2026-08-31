@@ -2,7 +2,7 @@
 const GAME_DURATION_MS = 10000; // 10초 대기
 const CAMPAIGN_MODE = 'PRE_LAUNCH';  // 'PRE_LAUNCH' | 'LIVE'
 const TEAM_SIGNUP_LINK = '';          // LIVE 전환 시 여기에 링크 주입
-const INSTAGRAM_URL = 'https://www.instagram.com/gemini_koreauniv/'; // 임시 핸들
+const STUDENT_OFFER_URL = 'https://goo.gle/koreaseoul';
 
 // Audio Context
 let audioCtx = null;
@@ -46,7 +46,7 @@ const i18n = {
     ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">이 게임, Gemini로 만들었습니다',
     ctaBodyPre: '대학생·대학원생을 위한 Google AI Plus 12개월 무료 혜택,<br>곧 안내드립니다. 놓치지 않으려면 팔로우해주세요.',
     ctaBodyLive: '대학생·대학원생은 Google AI Plus를 12개월 무료로 쓸 수 있어요.',
-    btnCtaPre: '인스타그램 팔로우하고 소식 받기',
+    btnCtaPre: 'Google AI Plus 혜택 수령하기',
     btnCtaLive: '12개월 무료로 시작하기',
     failTitle: '광탈',
     failMsg: '서버도 안 열렸는데 눌렀습니다',
@@ -96,12 +96,12 @@ const i18n = {
     btnShare: 'Share to Story',
     btnRetry: 'Try Again',
     promoBannerTitle: '12 Months Free Google AI Plus for Students',
-    promoBannerSubPre: 'Follow IG for updates 👉',
+    promoBannerSubPre: 'Claim it now 👉',
     promoBannerSubLive: 'Get 12 Months Free 👉',
     ctaTitle: '<img src="img/rocket.png" alt="rocket" style="width: 24px; vertical-align: middle; margin-right: 6px; transform: translateY(-2px);">Built with Gemini',
     ctaBodyPre: '12 months free Google AI Plus for university students, coming soon.<br>Follow us to stay updated.',
     ctaBodyLive: 'University students can get 12 months of Google AI Plus for free.',
-    btnCtaPre: 'Follow Instagram for Updates',
+    btnCtaPre: 'Claim Google AI Plus Offer',
     btnCtaLive: 'Start 12 Months Free',
     failTitle: 'FAIL',
     failMsg: 'You clicked before the server opened',
@@ -207,7 +207,7 @@ function initPromoUI() {
       el.style.cursor = 'pointer';
       el.onclick = () => {
         sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'banner', lang: currentLang });
-        window.open(INSTAGRAM_URL, '_blank');
+        window.open(STUDENT_OFFER_URL, '_blank');
       };
     });
     if (ctaBody) ctaBody.innerHTML = t.ctaBodyPre;
@@ -215,7 +215,7 @@ function initPromoUI() {
       btnCta.textContent = t.btnCtaPre;
       btnCta.onclick = () => {
         sendGAEvent('cta_click', { mode: 'PRE_LAUNCH', source: 'result_cta', lang: currentLang });
-        window.open(INSTAGRAM_URL, '_blank');
+        window.open(STUDENT_OFFER_URL, '_blank');
       };
     }
   } else {
